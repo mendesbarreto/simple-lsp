@@ -4,12 +4,12 @@ import (
 	"bufio"
 	"bytes"
 	"encoding/json"
-	"golang-lsp/analysis"
-	"golang-lsp/lsp"
-	"golang-lsp/rpc"
 	"io"
 	"log"
 	"os"
+	"simple-lsp/analysis"
+	"simple-lsp/lsp"
+	"simple-lsp/rpc"
 	"strconv"
 )
 

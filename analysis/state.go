@@ -2,9 +2,9 @@ package analysis
 
 import (
 	"fmt"
-	"golang-lsp/lsp"
 	"log"
 	"regexp"
+	"simple-lsp/lsp"
 	"strings"
 	"unicode"
 )

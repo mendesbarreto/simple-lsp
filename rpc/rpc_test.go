@@ -1,7 +1,7 @@
 package rpc_test
 
 import (
-	"golang-lsp/rpc"
+	"simple-lsp/rpc"
 	"testing"
 )
 
