@@ -29,6 +29,7 @@ type (
 		TextDocumentSync   int  `json:"textDocumentSync"`
 		HoverProvider      bool `json:"hoverProvider"`
 		DefinitionProvider bool `json:"definitionProvider"`
+		CodeActionProfider bool `json:"codeActionProvider"`
 	}
 	ServerInfo struct {
 		Name    string `json:"name"`
@@ -47,6 +48,7 @@ func NewInitializeResponse(id int) InitializeResponse {
 				TextDocumentSync:   1,
 				HoverProvider:      true,
 				DefinitionProvider: true,
+				CodeActionProfider: true,
 			},
 			ServerInfo: ServerInfo{
 				Name:    "go-local-lsp",

@@ -129,3 +129,81 @@ func (s *State) Definition(id int, uri string, position lsp.Position) lsp.Defini
 		},
 	}
 }
+
+var worstEditos = []string{"VS Code", "JetBrains", "InteliJ"}
+
+func getWorstEditorsIndex(line string, logger *log.Logger) (int, string) {
+	idx := -1
+	editor := ""
+
+	for _, editorName := range worstEditos {
+		idx = strings.Index(line, editorName)
+		logger.Printf("Trying to find %s, on line: %s, idx: %d", editorName, line, idx)
+		if idx >= 0 {
+			editor = editorName
+			break
+		}
+	}
+
+	return idx, editor
+}
+
+func (s *State) TextDocumentCodeAction(id int, uri string, logger *log.Logger) lsp.TextDocumentCodeActionResponse {
+	text := s.Documents[uri]
+
+	actions := []lsp.CodeAction{}
+
+	for row, line := range strings.Split(text, "\n") {
+		idx, editorName := getWorstEditorsIndex(line, logger)
+		if idx >= 0 && len(editorName) > 0 {
+			logger.Printf("Editor %s found on line %d", editorName, line)
+			replaceChange := map[string][]lsp.TextEdit{}
+			replaceChange[uri] = []lsp.TextEdit{
+				{
+					Range:   LineRange(row, idx, idx+len(editorName)),
+					NewText: "NeoVim",
+				},
+			}
+
+			actions = append(actions, lsp.CodeAction{
+				Title: fmt.Sprintf("Replace %s with the Best editor out there", editorName),
+				Edit:  &lsp.WorkspaceEdit{Changes: replaceChange},
+			})
+
+			removeShitIDE := map[string][]lsp.TextEdit{}
+			removeShitIDE[uri] = []lsp.TextEdit{
+				{
+					Range:   LineRange(row, idx, idx+len(editorName)),
+					NewText: "Shit IDE Removed",
+				},
+			}
+
+			actions = append(actions, lsp.CodeAction{
+				Title: fmt.Sprintf("Remove %s shit IDE from this file", editorName),
+				Edit:  &lsp.WorkspaceEdit{Changes: removeShitIDE},
+			})
+		}
+	}
+
+	response := lsp.TextDocumentCodeActionResponse{
+		Response: lsp.Response{
+			RPC: "2.0",
+			ID:  &id,
+		},
+		Result: actions,
+	}
+	return response
+}
+
+func LineRange(line, start, end int) lsp.Range {
+	return lsp.Range{
+		Start: lsp.Position{
+			Line:      line,
+			Character: start,
+		},
+		End: lsp.Position{
+			Line:      line,
+			Character: end,
+		},
+	}
+}
